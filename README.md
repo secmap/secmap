@@ -66,7 +66,7 @@ You can use the following commands to control secmap services on the nodes.
 5. See more command about redis/cassandra/pushtask client.
 
   ```bash
-  $ ./secmap.rb RedisCli/PushTask/CassandraCli list  
+  $ ./secmap.rb client RedisCli/PushTask/CassandraCli list  
   ```
 
 ## Using ansible
