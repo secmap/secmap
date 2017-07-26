@@ -11,5 +11,5 @@ apt-get update
 
 apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
 apt-get install -y docker-engine
-gpasswd -a dsns docker
+gpasswd -a $USER docker
 service docker restart
