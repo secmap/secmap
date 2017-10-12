@@ -103,6 +103,28 @@ class RedisWrapper
     end
   end
 
+  def wait_done
+    while true
+      done = true
+      ANALYZER.each do |a|
+        ['0', '1', '2', 'doing'].each do |p|
+          begin
+            if @r.exists("#{a}:#{p}")
+              done = false
+              sleep(1)
+              break
+            end
+          rescue Exception => e
+            STDERR.puts e.message
+          end
+        end
+      end
+      if done
+        break
+      end
+    end
+  end
+
   def get_analyzer
     analyzer = nil
     begin

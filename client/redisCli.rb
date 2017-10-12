@@ -13,6 +13,7 @@ class RedisCli < Command
     @commandTable.append("init", 0, "init_redis", ["Initialize redis data."])
     @commandTable.append("reload", 0, "reload_redis", ["Reload redis data."])
     @commandTable.append("status", 0, "status", ["Show redis status."])
+    @commandTable.append("wait", 0, "wait_done", ["Wait all task done."])
   end
 
   def init_redis
@@ -28,6 +29,11 @@ class RedisCli < Command
   def status
     r = RedisWrapper.new
     puts "Running ? #{r.status.to_s}"
+  end
+
+  def wait_done
+    r = RedisWrapper.new
+    r.wait_done
   end
 
 end
