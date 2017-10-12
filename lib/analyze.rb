@@ -19,37 +19,21 @@ class Analyze
     @log = File.new("/log/#{@analyzer_name}.log", 'a')
   end
 
-  def get_taskuid
-    taskuid = nil
-    while taskuid == nil
+  def get_file
+    file = nil
+    while file == nil
       @priority.each do |p|
-        taskuid = @redis.get_taskuid("#{@analyzer_name}:#{p.to_s}")
-        if taskuid != nil
+        file = @redis.get_taskuid("#{@analyzer_name}:#{p.to_s}")
+        if file != nil
           @redis.set_doing(@analyzer_name)
           break
         end
       end
-      if taskuid == nil
+      if file == nil
         sleep(@sleep_seconds)
       end
     end
-    return taskuid
-  end
-
-  def get_file(taskuid)
-    res = @cassandra.get_file(taskuid)
-    if res == 'timeout'
-      while res == 'timeout'
-        STDERR.puts "File #{taskuid} timeout!!!!"
-        sleep Random.rand(10..30)
-        res = @cassandra.get_file(taskuid)
-      end
-    elsif res == nil
-      STDERR.puts "File #{taskuid} not found!!!!"
-      return nil
-    else
-      return res['path'].each.first
-    end
+    return file
   end
 
   def analyze(file_path)
@@ -123,8 +107,7 @@ class Analyze
     while true
       start = Time.now
       file = nil
-      taskuid = get_taskuid
-      file = get_file(taskuid)
+      file = get_file
       if file == nil
         next
       end
@@ -132,7 +115,7 @@ class Analyze
       if report == nil
         @log.write('db_no_store:')
       else
-        save_report(taskuid, report)
+        save_report(file, report)
       end
       @log.write("#{Time.now - start}\n")
       @log.flush

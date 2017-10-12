@@ -23,12 +23,8 @@ class PushTask < Command
   end
 
   def push_file(filepath, analyzer, priority)
-    taskuid = @cassandra.insert_file(filepath)
-    if taskuid == nil
-      STDERR.puts "Insert file fail!!!!"
-      return
-    end
-    push_to_redis(taskuid, analyzer, priority)
+    file = File.absolute_path(filepath)
+    push_to_redis(file, analyzer, priority)
     puts "#{taskuid}\t#{File.expand_path(filepath)}"
     return "#{taskuid}\t#{File.expand_path(filepath)}"
   end
@@ -43,50 +39,16 @@ class PushTask < Command
     end
   end
 
-  def create_all_taskuid(dir)
-    all_taskuid = File.new("#{dir}/all_taskuid", 'w')
-    Dir.glob("#{dir}/*").each do |f|
-      if !File.file?(f) or File.basename(f) == 'all_taskuid'
-        next
-      end
-      STDOUT.reopen('/dev/null')
-      taskuid = @cassandra.insert_file(f)
-      if taskuid != nil
-        all_taskuid.write("#{taskuid}\t#{File.expand_path(f)}\n")
-      else
-        all_taskuid.write("Push file #{f} error!!!!\n")
-      end
-      STDOUT.reopen($stdout)
-    end
-    all_taskuid.close
-  end
-
   def push_dir(dirpath, analyzer, priority)
     dirpath = File.expand_path(dirpath)
 
     Dir.glob("#{dirpath}/**/*/").push(dirpath).each do |d|
-      if !File.exist?("#{d}/all_taskuid")
-        create_all_taskuid(d)
-      end
-      lines = File.new("#{d}/all_taskuid", 'r').readlines.each do |line|
-        taskuid = line.strip.split("\t")[0]
-        push_to_redis(taskuid, analyzer, priority)
-      end
-    end
-  end
-
-  def push_dir_base(dirpath, analyzer, priority, basename)
-    dirpath = File.expand_path(dirpath)
-
-    Dir.glob("#{dirpath}/**/*/").push(dirpath).each do |d|
-      if !File.exist?("#{d}/all_taskuid")
-        create_all_taskuid(d)
-      end
-      lines = File.new("#{d}/all_taskuid", 'r').readlines.each do |line|
-        taskuid, filename = line.strip.split("\t")
-        if filename.match("\.#{basename}$") != nil
-          push_to_redis(taskuid, analyzer, priority)
+      Dir.glob("#{d}/*").each do |f|
+        if !File.file?(f)
+          next
         end
+        file = File.absolute_path(f.strip)
+        push_to_redis(file, analyzer, priority)
       end
     end
   end
