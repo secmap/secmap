@@ -14,7 +14,7 @@ class CassandraDocker < DockerWrapper
     tokens = (Sys::Filesystem.stat('/').block_size * Sys::Filesystem.stat('/').blocks_available / 1024.0 / 1024.0 / 1024.0 / 1024.0 * 256).to_i
     hostIP = nil
     Socket.ip_address_list.each do |ip|
-      if ip.ip_address.index('192.168.') != nil
+      if ip.ip_address.index(CASSANDRA_SEEDS[0].split('.')[0..1] * '.' + '.') != nil
         hostIP = ip.ip_address
         break
       end
