@@ -59,7 +59,7 @@ class CassandraWrapper
       CREATE KEYSPACE #{KEYSPACE}
       WITH replication = {
         'class': 'SimpleStrategy',
-        'replication_factor': 3
+        'replication_factor': #{REPLICA}
       }
     KEYSPACE_CQL
     begin
@@ -250,7 +250,7 @@ class CassandraWrapper
         statement = @session.prepare("UPDATE #{KEYSPACE}.summary SET path = path + ? WHERE taskuid = ?")
         result = @session.execute(statement, arguments: [Set[path], taskuid], timeout: 3)
       end
-    rescue WriteTimeoutError, TimeoutError => e
+    rescue TimeoutError => e
       STDERR.puts e.message
       STDERR.puts file+" timeout!!!!!!"
       taskuid = 'timeout'
@@ -271,7 +271,7 @@ class CassandraWrapper
         r = row
         break
       end
-    rescue ReadTimeoutError, TimeoutError => e
+    rescue TimeoutError => e
       STDERR.puts e.message
       STDERR.puts "Get file #{taskuid} timeout!!!!!!"
       r = 'timeout'
@@ -297,7 +297,7 @@ class CassandraWrapper
         @session.execute(statement, arguments: [taskuid, compressed_report, "#{analyzer}@#{host}", false, generator.now], timeout: 3)
       end
       result = true
-    rescue WriteTimeoutError, TimeoutError => e
+    rescue TimeoutError => e
       STDERR.puts e.message
       STDERR.puts taskuid+" timeout!!!!!!"
       result = 'timeout'
@@ -318,7 +318,7 @@ class CassandraWrapper
         r['overall'] = File.open(r['overall'], 'rb').read
       end
       r['overall'] = Zlib::Inflate.inflate(r['overall']).strip
-    rescue ReadTimeoutError, TimeoutError => e
+    rescue TimeoutError => e
       STDERR.puts e.message
       STDERR.puts "Get report #{taskuid} timeout!!!!!!"
       r = 'timeout'
