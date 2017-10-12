@@ -13,6 +13,7 @@ CASSANDRA_SEEDS = ['']
 CASSANDRA = ['']
 # Store the port of cassandra
 CASSANDRAPORT = 9042
+REPLICA = 1
 
 # Database keyspace
 KEYSPACE = 'secmap'
