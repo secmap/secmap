@@ -63,6 +63,7 @@ def kill_all(pids)
   pids.each do |pid|
     Process.wait(pid)
   end
+  pids.clear
 end
 
 if __FILE__ == $0
