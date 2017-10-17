@@ -103,6 +103,8 @@ class Analyze
     Zlib::GzipWriter.open(File.join(report_dir, "#{@analyzer_name}.gz")) { |gz|
       gz.write(report)
     }
+    @redis.del_doing(@analyzer_name)
+    @log.write('store_success:')
   end
 
   def do
