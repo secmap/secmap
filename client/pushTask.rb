@@ -3,7 +3,6 @@
 require __dir__+'/../conf/secmap_conf.rb'
 require __dir__+'/../lib/common.rb'
 require __dir__+'/../lib/command.rb'
-require __dir__+'/../lib/cassandra.rb'
 require __dir__+'/../lib/redis.rb'
 
 class PushTask < Command
@@ -11,7 +10,6 @@ class PushTask < Command
   def initialize(commandName)
     super(commandName)
 
-    @cassandra = CassandraWrapper.new(CASSANDRA)
     @redis = RedisWrapper.new
     @analyzer = @redis.get_analyzer
     if @analyzer == nil
