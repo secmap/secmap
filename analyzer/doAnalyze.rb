@@ -61,7 +61,7 @@ def kill_all(pids)
     Process.kill('INT', pid)
   end
   pids.each do |pid|
-    Process.join(pid)
+    Process.wait(pid)
   end
 end
 
