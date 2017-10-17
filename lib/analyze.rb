@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'etc'
+require 'zlib'
 require __dir__+'/../conf/secmap_conf.rb'
-require __dir__+'/cassandra.rb'
 require __dir__+'/redis.rb'
 
 class Analyze
@@ -15,8 +15,12 @@ class Analyze
     @np = Etc.nprocessors
 
     @redis = RedisWrapper.new
-    @cassandra = CassandraWrapper.new(CASSANDRA)
     @log = File.new("/log/#{@analyzer_name}.log", 'a')
+    @stop = false
+
+    Signal.trap('INT') do
+      @stop = true
+    end
   end
 
   def get_file
@@ -87,24 +91,24 @@ class Analyze
     return result
   end
 
-  def save_report(taskuid, report)
-    res = @cassandra.insert_report(taskuid, report, @analyzer_name)
-    if res == 'timeout'
-      while res == 'timeout'
-        STDERR.puts "#{taskuid} timeout!!!!"
-        sleep Random.rand(10..30)
-        res = @cassandra.insert_report(taskuid, report, @analyzer_name)
+  def save_report(filepath, report)
+    report_dir = File.join(REPORT, File.absolute_path(filepath).sub(SAMPLE, ''))
+    if not Dir.exist?(report_dir)
+      begin
+        Dir.mkdir(report_dir)
+      rescue
       end
-    elsif res == false
-      @log.write('db_error:')
-    else
-      @redis.del_doing(@analyzer_name)
-      @log.write('db_success:')
     end
+    Zlib::GzipWriter.open(File.join(report_dir, "#{@analyzer_name}.gz")) { |gz|
+      gz.write(report)
+    }
   end
 
   def do
     while true
+      if @stop
+        break
+      end
       start = Time.now
       file = nil
       file = get_file
