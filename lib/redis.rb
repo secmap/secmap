@@ -108,6 +108,7 @@ class RedisWrapper
       begin
         if @r.exists("#{a}:#{p}")
             return true
+        end
       rescue Exception => e
         STDERR.puts e.message
       end
