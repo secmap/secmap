@@ -67,11 +67,12 @@ if __FILE__ == $0
   pids = []
   while true
     if r.exist(ENV['analyzer'])
-      if pids.length > Etc.nprocessors
+      if pids.length >= Etc.nprocessors
           sleep(1)
       else
         if cpu_usage < 99.0
           pids << fork_analyzer
+          STDERR.puts("Num of #{ENV['analyzer']}: #{pids.length}")
         end
       end
     else
