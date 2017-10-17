@@ -60,6 +60,9 @@ def kill_all(pids)
   pids.each do |pid|
     Process.kill('INT', pid)
   end
+  pids.each do |pid|
+    Process.join(pid)
+  end
 end
 
 if __FILE__ == $0
@@ -77,7 +80,6 @@ if __FILE__ == $0
       end
     else
       kill_all(pids)
-      break
     end
   end
 end
