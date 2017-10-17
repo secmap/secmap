@@ -3,6 +3,7 @@
 require 'socket'
 require __dir__+'/../conf/secmap_conf.rb'
 require __dir__+'/docker.rb'
+require __dir__+'/common.rb'
 
 class AnalyzerDocker < DockerWrapper
 
@@ -28,7 +29,6 @@ class AnalyzerDocker < DockerWrapper
       }
     }
     createLogHome
-    createReportHome(@analyzerName)
   end
 
   def startAnalyze

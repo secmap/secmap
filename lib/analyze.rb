@@ -2,6 +2,7 @@
 
 require 'etc'
 require 'zlib'
+require 'json'
 require __dir__+'/../conf/secmap_conf.rb'
 require __dir__+'/redis.rb'
 
@@ -95,7 +96,7 @@ class Analyze
     report_dir = File.join(REPORT, File.absolute_path(filepath).sub(SAMPLE, ''))
     if not Dir.exist?(report_dir)
       begin
-        Dir.mkdir(report_dir)
+        `mkdir -p #{report_dir}`
       rescue
       end
     end
