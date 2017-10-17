@@ -106,7 +106,7 @@ class RedisWrapper
   def exist(analyzer)
     ['0', '1', '2'].each do |p|
       begin
-        if @r.exists("#{a}:#{p}")
+        if @r.exists("#{analyzer}:#{p}")
             return true
         end
       rescue Exception => e
