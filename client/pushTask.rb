@@ -11,13 +11,9 @@ class PushTask < Command
     super(commandName)
 
     @redis = RedisWrapper.new
-    @analyzer = @redis.get_analyzer
-    if @analyzer == nil
-      @analyzer = ANALYZER
-    end
+    @analyzer = ANALYZER
     @commandTable.append("addFile", 3, "push_file", ["Add file to task list.", "Usage: addFile <file path> <analyzer> <priority> .", "Analyzer can be all ."])
     @commandTable.append("addDir", 3, "push_dir", ["Add all files under directory to task list.", "Usage: addDir <dir path> <analyzer> <priority> .", "Analyzer can be all ."])
-    @commandTable.append("addDirBase", 4, "push_dir_base", ["Add all files with some basename under directory to task list.", "Usage: addDir <dir path> <analyzer> <priority> <basename> .", "Analyzer can be all ."])
   end
 
   def push_file(filepath, analyzer, priority)

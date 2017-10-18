@@ -4,7 +4,6 @@ require __dir__+'/../lib/analyze.rb'
 require __dir__+'/../lib/command.rb'
 require __dir__+'/../lib/docker.rb'
 require __dir__+'/../lib/analyzerDocker.rb'
-require __dir__+'/../lib/redis.rb'
 
 class Analyzer < Command
 

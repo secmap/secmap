@@ -17,27 +17,6 @@ class RedisWrapper
     @host = Socket.gethostname
   end
 
-  def init_redis
-    begin
-      @r.flushdb
-      REDIS_INIT.each do |key, value|
-        @r[key] = value
-      end
-    rescue Redis::CannotConnectError
-      puts "Cannot connect to redis server #{REDIS_ADDR}."
-    end
-  end
-
-  def reload_redis
-    begin
-      REDIS_INIT.each do |key, value|
-        @r[key] = value
-      end
-    rescue Redis::CannotConnectError
-      puts "Cannot connect to redis server #{REDIS_ADDR}."
-    end
-  end
-
   def status
     available = true
     begin
@@ -136,18 +115,6 @@ class RedisWrapper
         break
       end
     end
-  end
-
-  def get_analyzer
-    analyzer = nil
-    begin
-      analyzer = @r.get('ANALYZERS').split(' ')
-    rescue Exception => e
-      STDERR.puts e.message
-      STDERR.puts 'Get analyzer from fail!!!!'
-      STDERR.puts 'Use local config.'
-    end
-    return analyzer
   end
 
 end

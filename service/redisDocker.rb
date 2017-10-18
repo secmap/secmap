@@ -10,9 +10,7 @@ class RedisDocker < DockerWrapper
     @createOptions = {
       'Image' => @dockerImage,
       'name' => @dockerName,
-      #'Volumes' => { '/usr/local/etc/redis/' => {} },
       'HostConfig' => {
-        #'Binds' => [":/usr/local/etc/redis/redis.conf"],
         'PortBindings' => {
           '6379/tcp' => [{ 'HostPort' => '6379' }]
         }
