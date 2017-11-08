@@ -30,6 +30,8 @@ class DockerWrapper < Command
       puts "Image #{@dockerImage} already exist."
       return
     end
+    Excon.defaults[:read_timeout] = 1000
+    Excon.defaults[:write_timeout] = 1000
     image = Docker::Image.create('fromImage' => @dockerImage)
     puts image
   end
